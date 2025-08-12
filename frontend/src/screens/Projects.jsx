@@ -8,7 +8,6 @@ import hljs from 'highlight.js';
 import { getWebContainer } from '../config/webContainer'
 
 
-console.log("ENV Base URL:", import.meta.env.VITE_API_BASE_URL);
 
 function SyntaxHighlightedCode(props) {
     const ref = useRef(null)
@@ -299,49 +298,49 @@ const Project = () => {
                             }
                         </div>
 
-                        <div className="actions flex gap-2">
-                            <button
-                                onClick={async () => {
-                                    await webContainer.mount(fileTree)
+                       <div className="actions flex gap-2">
+  <button
+    onClick={async () => {
+      if (!webContainer) {
+        alert("WebContainer not available. This feature only works in local environment.");
+        return;
+      }
 
+      await webContainer.mount(fileTree);
 
-                                    const installProcess = await webContainer.spawn("npm", [ "install" ])
+      const installProcess = await webContainer.spawn("npm", [ "install" ]);
 
+      installProcess.output.pipeTo(new WritableStream({
+        write(chunk) {
+          console.log(chunk);
+        }
+      }));
 
+      if (runProcess) {
+        runProcess.kill();
+      }
 
-                                    installProcess.output.pipeTo(new WritableStream({
-                                        write(chunk) {
-                                            console.log(chunk)
-                                        }
-                                    }))
+      let tempRunProcess = await webContainer.spawn("npm", [ "start" ]);
 
-                                    if (runProcess) {
-                                        runProcess.kill()
-                                    }
+      tempRunProcess.output.pipeTo(new WritableStream({
+        write(chunk) {
+          console.log(chunk);
+        }
+      }));
 
-                                    let tempRunProcess = await webContainer.spawn("npm", [ "start" ]);
+      setRunProcess(tempRunProcess);
 
-                                    tempRunProcess.output.pipeTo(new WritableStream({
-                                        write(chunk) {
-                                            console.log(chunk)
-                                        }
-                                    }))
+      webContainer.on('server-ready', (port, url) => {
+        console.log(port, url);
+        setIframeUrl(url);
+      });
+    }}
+    className='p-2 px-4 bg-slate-300 text-white'
+  >
+    run
+  </button>
+</div>
 
-                                    setRunProcess(tempRunProcess)
-
-                                    webContainer.on('server-ready', (port, url) => {
-                                        console.log(port, url)
-                                        setIframeUrl(url)
-                                    })
-
-                                }}
-                                className='p-2 px-4 bg-slate-300 text-white'
-                            >
-                                run
-                            </button>
-
-
-                        </div>
                     </div>
                     <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
                         {
