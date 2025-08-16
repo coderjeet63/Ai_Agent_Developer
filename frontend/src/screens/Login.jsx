@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from '../config/axios'; // ✅ Make sure baseURL is correctly set
+import { motion } from 'framer-motion'; // ✅ Animation
+import axios from '../config/axios';
 import { UserContext } from '../context/user.context';
 
 function Login() {
@@ -16,13 +17,11 @@ function Login() {
 
     try {
       const res = await axios.post('/users/login', { email, password });
-
       const { user, token } = res.data;
 
-      setUser(user);                            // Store in Context API
-      localStorage.setItem('token', token);     // Store token for auth
-      navigate('/');                            // Redirect to home/dashboard
-
+      setUser(user);
+      localStorage.setItem('token', token);
+      navigate('/');
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid credentials or server error.');
@@ -30,56 +29,82 @@ function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-800">
-      <form
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 p-4">
+      <motion.form
         onSubmit={submitHandler}
-        className="bg-white p-6 rounded-lg shadow-md w-full max-w-md"
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-3xl font-bold mb-6 text-center text-gray-900"
+        >
+          Welcome Back 👋
+        </motion.h2>
 
         {error && (
-          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-red-500 text-sm mb-4 text-center"
+          >
+            {error}
+          </motion.p>
         )}
 
-        <input
+        <motion.input
+          whileFocus={{ scale: 1.02, borderColor: '#3b82f6' }}
           type="email"
-          placeholder="Enter your email"
+          placeholder="✉️ Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
 
-        <input
+        <motion.input
+          whileFocus={{ scale: 1.02, borderColor: '#3b82f6' }}
           type="password"
-          placeholder="Enter your password"
+          placeholder="🔑 Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full mb-6 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
 
-        <button
+        <motion.button
+          whileHover={{ scale: !email || !password ? 1 : 1.05 }}
+          whileTap={{ scale: !email || !password ? 1 : 0.95 }}
           type="submit"
           disabled={!email || !password}
-          className={`w-full py-2 rounded-md transition-colors text-white ${
+          className={`w-full py-2 rounded-lg font-semibold shadow-md transition text-white ${
             !email || !password
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-500 hover:bg-blue-600'
           }`}
         >
           Login
-        </button>
+        </motion.button>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?
-          <Link to="/register" className="text-blue-500 hover:underline ml-1">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-4 text-center text-sm text-gray-700"
+        >
+          Don’t have an account?
+          <Link
+            to="/register"
+            className="text-blue-600 font-medium hover:underline ml-1"
+          >
             Sign up
           </Link>
-        </p>
-      </form>
+        </motion.p>
+      </motion.form>
     </div>
   );
 }
 
 export default Login;
-
-
