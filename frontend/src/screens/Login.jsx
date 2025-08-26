@@ -1,109 +1,197 @@
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion'; // ✅ Animation
-import axios from '../config/axios';
-import { UserContext } from '../context/user.context';
+// Login.jsx
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../config/axios"; // ✅ using your configured axios
+import { UserContext } from "../context/user.context";
+import "../customcss/Login.css"; // ✅ your ready CSS
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [active, setActive] = useState("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
 
-  const submitHandler = async (e) => {
+  // 🔹 Login handler
+  const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post('/users/login', { email, password });
+      const res = await axios.post("/users/login", { email, password });
       const { user, token } = res.data;
 
       setUser(user);
-      localStorage.setItem('token', token);
-      navigate('/');
+      localStorage.setItem("token", token);
+
+      // ✅ role check if you want, else default home
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Invalid credentials or server error.');
+      console.error("Login error:", err);
+      setError("Invalid credentials or server error.");
+    }
+  };
+
+  // 🔹 Signup handler
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/users/register", {
+        name,
+        email,
+        password,
+      });
+      const { user, token } = res.data;
+
+      setUser(user);
+      localStorage.setItem("token", token);
+
+      navigate("/"); // ✅ direct login after register
+    } catch (err) {
+      console.error("Registration error:", err);
+      setError("Registration failed. Please try again.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 p-4">
-      <motion.form
-        onSubmit={submitHandler}
-        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md"
-      >
-        <motion.h2
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-3xl font-bold mb-6 text-center text-gray-900"
-        >
-          Welcome Back 👋
-        </motion.h2>
+    <section className="user">
+      <div className="user_options-container">
+        {/* Left / Right Info Panels */}
+        <div className="user_options-text">
+          <div className="user_options-unregistered">
+            <h2 className="user_unregistered-title">Don't have an account?</h2>
+            <p className="user_unregistered-text">
+              Sign up to explore our collections and enjoy shopping!
+            </p>
+            <button
+              className="user_unregistered-signup"
+              onClick={() => setActive("signup")}
+            >
+              Sign up
+            </button>
+          </div>
 
-        {error && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-red-500 text-sm mb-4 text-center"
-          >
-            {error}
-          </motion.p>
-        )}
+          <div className="user_options-registered">
+            <h2 className="user_registered-title">Have an account?</h2>
+            <p className="user_registered-text">
+              Log in to continue your shopping experience.
+            </p>
+            <button
+              className="user_registered-login"
+              onClick={() => setActive("login")}
+            >
+              Login
+            </button>
+          </div>
+        </div>
 
-        <motion.input
-          whileFocus={{ scale: 1.02, borderColor: '#3b82f6' }}
-          type="email"
-          placeholder="✉️ Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-
-        <motion.input
-          whileFocus={{ scale: 1.02, borderColor: '#3b82f6' }}
-          type="password"
-          placeholder="🔑 Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-6 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-
-        <motion.button
-          whileHover={{ scale: !email || !password ? 1 : 1.05 }}
-          whileTap={{ scale: !email || !password ? 1 : 0.95 }}
-          type="submit"
-          disabled={!email || !password}
-          className={`w-full py-2 rounded-lg font-semibold shadow-md transition text-white ${
-            !email || !password
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600'
+        {/* Forms */}
+        <div
+          className={`user_options-forms ${
+            active === "signup" ? "bounceLeft" : "bounceRight"
           }`}
         >
-          Login
-        </motion.button>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-4 text-center text-sm text-gray-700"
-        >
-          Don’t have an account?
-          <Link
-            to="/register"
-            className="text-blue-600 font-medium hover:underline ml-1"
+          {/* Login Form */}
+          <div
+            className={`user_forms-login ${
+              active === "login" ? "showForm" : ""
+            }`}
           >
-            Sign up
-          </Link>
-        </motion.p>
-      </motion.form>
-    </div>
+            <h2 className="forms_title">Login</h2>
+            {error && active === "login" && (
+              <p className="text-red-500 text-sm text-center mb-2">{error}</p>
+            )}
+            <form className="forms_form" onSubmit={handleLogin}>
+              <fieldset className="forms_fieldset">
+                <div className="forms_field">
+                  <input
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="Email"
+                    className="forms_field-input"
+                    required
+                  />
+                </div>
+                <div className="forms_field">
+                  <input
+                    onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                    placeholder="Password"
+                    className="forms_field-input"
+                    required
+                  />
+                </div>
+              </fieldset>
+              <div className="forms_buttons">
+                <button type="button" className="forms_buttons-forgot">
+                  Forgot password?
+                </button>
+                <input
+                  type="submit"
+                  value="Log In"
+                  className="forms_buttons-action"
+                />
+              </div>
+            </form>
+          </div>
+
+          {/* Signup Form */}
+          <div
+            className={`user_forms-signup ${
+              active === "signup" ? "showForm" : ""
+            }`}
+          >
+            <h2 className="forms_title">Sign Up</h2>
+            {error && active === "signup" && (
+              <p className="text-red-500 text-sm text-center mb-2">{error}</p>
+            )}
+            <form className="forms_form" onSubmit={handleSignup}>
+              <fieldset className="forms_fieldset">
+                <div className="forms_field">
+                  <input
+                    onChange={(e) => setName(e.target.value)}
+                    type="text"
+                    placeholder="Full Name"
+                    className="forms_field-input"
+                    required
+                  />
+                </div>
+                <div className="forms_field">
+                  <input
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="Email"
+                    className="forms_field-input"
+                    required
+                  />
+                </div>
+                <div className="forms_field">
+                  <input
+                    onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                    placeholder="Password"
+                    className="forms_field-input"
+                    required
+                  />
+                </div>
+              </fieldset>
+              <div className="forms_buttons">
+                <input
+                  type="submit"
+                  value="Sign up"
+                  className="forms_buttons-action"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

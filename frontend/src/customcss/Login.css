@@ -1,0 +1,121 @@
+.user {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 80vh; /* Between Nav and Footer */
+  background: #f5f5f5; /* light background */
+}
+
+.user_options-container {
+  position: relative;
+  width: 80%;
+  max-width: 900px;
+}
+
+.user_options-text {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(34, 34, 34, 0.85);
+  border-radius: 3px;
+  color: white;
+}
+
+.user_options-unregistered,
+.user_options-registered {
+  width: 50%;
+  padding: 50px 30px;
+}
+
+/* Titles */
+.user_registered-title,
+.user_unregistered-title {
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+}
+
+/* Buttons */
+.user_registered-login,
+.user_unregistered-signup {
+  margin-top: 30px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 10px 30px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  transition: all 0.2s ease-in-out;
+}
+.user_registered-login:hover,
+.user_unregistered-signup:hover {
+  background-color: #ccc;
+  color: #222;
+}
+
+/* Forms container */
+.user_options-forms {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  width: calc(50% - 30px);
+  min-height: 400px;
+  background: white;
+  border-radius: 3px;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.25);
+  transform: translate3d(100%, -50%, 0);
+  transition: transform 0.4s ease-in-out;
+  overflow: hidden;
+}
+
+/* Login + Signup Forms */
+.user_forms-login,
+.user_forms-signup {
+  position: absolute;
+  top: 60px;
+  left: 40px;
+  width: calc(100% - 80px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+}
+
+.user_forms-login.showForm,
+.user_forms-signup.showForm {
+  opacity: 1;
+  visibility: visible;
+}
+
+.forms_title {
+  margin-bottom: 30px;
+  font-size: 1.4rem;
+  color: #e8716d;
+  text-transform: uppercase;
+}
+
+/* Fields */
+.forms_field {
+  margin-bottom: 20px;
+}
+.forms_field-input {
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* Buttons */
+.forms_buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+.forms_buttons-action {
+  background: #e8716d;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+}
+.forms_buttons-action:hover {
+  background: #d95a57;
+}

@@ -1,29 +1,25 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion'; // ✅ Animation
+import { motion } from 'framer-motion';
 import axios from '../config/axios';
 import { UserContext } from '../context/user.context';
 
 function Register() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
-  const disabled = !email || !password || !confirmPassword;
+
+  const disabled = !name || !email || !password;
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
     try {
-      const res = await axios.post('/users/register', { email, password });
+      const res = await axios.post('/users/register', { name, email, password });
       const { user, token } = res.data;
 
       setUser(user);
@@ -63,6 +59,17 @@ function Register() {
           </motion.p>
         )}
 
+        {/* Name Input */}
+        <motion.input
+          whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          type="text"
+          placeholder="👤 Enter your name"
+        />
+
+        {/* Email Input */}
         <motion.input
           whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
           value={email}
@@ -72,24 +79,17 @@ function Register() {
           placeholder="✉️ Enter your email"
         />
 
+        {/* Password Input */}
         <motion.input
           whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          className="w-full mb-6 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           type="password"
           placeholder="🔑 Enter your password"
         />
 
-        <motion.input
-          whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full mb-6 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          type="password"
-          placeholder="✅ Confirm your password"
-        />
-
+        {/* Register Button */}
         <motion.button
           whileHover={{ scale: disabled ? 1 : 1.05 }}
           whileTap={{ scale: disabled ? 1 : 0.95 }}
